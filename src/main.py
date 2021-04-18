@@ -64,11 +64,23 @@ def protected():
     user=User.query.get(current_user_id)
     return jsonify({"id":user.id, "email":user.email})
 
+@app.route("/createUser", methods=["POST"])
+def create_User():
+    email=request.json.get("email", None)
+    password=request.json.get("password", None)
+    name=request.json.get("name", None)
+    is_active=request.json.get("is_active", None)
+    user=User(email=email, password=password, name=name, is_active=is_active)
+    db.session.add(user)
+    db.session.commit()
+    return jsonify({"user":"ok"})
+
+
 @app.route("/person", methods=["GET"])
 def People():
     user=Person.query.all()
     user = list(map(lambda x: x.serialize(), user))
-    return jsonify(user)
+    return jsonify({"results":user})
 
 @app.route("/person", methods=["POST"])
 def People_agregar():
@@ -101,9 +113,36 @@ def Planet_agregar():
     #user=json.loads(name, color_ojos, color_cabello,gender)
     return jsonify({"planet":"ok"})
 
+@app.route("/favorite", methods=["POST"])
+@jwt_required()
+def agregar_favorite():
+    id_user=request.json.get("id_user",None)
+    id_planet=request.json.get("id_planet",None)
+    id_person=request.json.get("id_person",None)
+    favorite=Favorite(id_user=id_user, id_planet=id_planet, id_person=id_person)
+    db.session.add(favorite)
+    db.session.commit()
+    #user=json.loads(name, color_ojos, color_cabello,gender)
+    return jsonify({"planet":"ok"})
 
+
+@app.route("/favorite", methods=["GET"])
+@jwt_required()
+def favorite():
+    favorite=Favorite.query.all()
+    favorite = list(map(lambda x: x.serialize(), favorite))
+    return jsonify(favorite)
 #return 'Response for the POST todo'
 
+@app.route('/favorite/<int:position>', methods=['DELETE'])
+@jwt_required()
+def delete_favorite(position):
+    favorite = Favorite.query.get(position)
+    if favorite is None:
+        raise APIException('User not found', status_code=404)
+    db.session.delete(favorite)
+    db.session.commit()
+    return jsonify(favorite)
 # this only runs if `$ python src/main.py` is executed
 if __name__ == '__main__':
     PORT = int(os.environ.get('PORT', 3000))

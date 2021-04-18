@@ -8,7 +8,8 @@ class User(db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(80), unique=False, nullable=False)
     is_active = db.Column(db.Boolean(), unique=False, nullable=False)
-    favorite = db.relationship('Favorite', lazy=True)
+
+    
 
     def __repr__(self):
         return '<User %r>' % self.name
@@ -29,7 +30,8 @@ class Person(db.Model):
     color_ojos = db.Column(db.String(250), nullable=False)
     color_cabello = db.Column(db.String(250), nullable=False)
     gender = db.Column(db.String(250), nullable=False)
-    favorite = db.relationship('Favorite', lazy=True)
+
+    
 
     def __repr__(self):
         return '<name %r>' % self.name
@@ -51,7 +53,7 @@ class Planet(db.Model):
     rotation = db.Column(db.String(250))
     poblacion = db.Column(db.String(250), nullable=False)
     terreno = db.Column(db.String(250), nullable=False)
-    favorite = db.relationship('Favorite', lazy=True)
+
     def __repr__(self):
         return '<name %r>' % self.name
 
@@ -72,12 +74,12 @@ class Planet(db.Model):
 
 class Favorite(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.column(db.Integer, db.ForeignKey(User.id))
-    #user = relationship(User)
-    planet_id = db.Column(db.Integer, db.ForeignKey(Planet.id))
-    #planet = relationship(Planet)
-    person_id = db.Column(db.Integer, db.ForeignKey(Person.id))
-    #person = relationship(Person)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user = db.relationship("User")
+    planet_id = db.Column(db.Integer, db.ForeignKey('planet.id'))
+    planet = db.relationship("Planet")
+    person_id = db.Column(db.Integer, db.ForeignKey('person.id'))
+    person = db.relationship("Person")
     
 
     def __repr__(self):
